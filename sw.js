@@ -1,7 +1,7 @@
 // Service Worker for Dugout PWA
 // Caches the app so it works offline after first visit.
 
-const CACHE_NAME = 'dugout-v1';
+const CACHE_NAME = 'dugout-v2';
 const CORE_FILES = [
   './',
   './index.html',

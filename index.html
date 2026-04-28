@@ -46,15 +46,23 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
-    overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
     width: 100%;
+  }
+
+  html {
+    /* Mobile-friendly scrolling: don't trap touch scroll */
     overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   body {
-    padding: calc(12px + var(--safe-top)) 12px calc(90px + var(--safe-bottom));
+    min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport — accounts for mobile browser chrome */
+    overflow-x: hidden;
+    /* allow vertical scrolling on body */
+    padding: calc(12px + var(--safe-top)) 12px calc(100px + var(--safe-bottom));
   }
 
   .container { max-width: 1400px; margin: 0 auto; width: 100%; }
@@ -499,6 +507,138 @@
     min-width: 0;
   }
   .dup-row .positions { display: flex; gap: 4px; }
+
+  /* Gender + skill badges (inline next to name) */
+  .gender-badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    font-family: 'JetBrains Mono', monospace;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+  .gender-badge.g-m {
+    background: #e7f0fa;
+    color: #2962a8;
+    border: 1px solid #c5dbf2;
+  }
+  .gender-badge.g-f {
+    background: #fbe9f0;
+    color: #b73369;
+    border: 1px solid #f5c8d8;
+  }
+  .gender-badge.gb-inline {
+    margin-left: 5px;
+    transform: translateY(-1px);
+  }
+
+  .skill-badge {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid #c6e3cd;
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+
+  /* Gender chip selector (Add + Edit forms) */
+  .gender-chips {
+    display: flex;
+    gap: 6px;
+  }
+  .gender-chip {
+    flex: 1;
+    padding: 8px 6px;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid var(--border-mid);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .gender-chip.on {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .gender-chip:active { transform: scale(0.96); }
+
+  /* Add player extras row (gender + skill) */
+  .add-extras {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+    align-items: end;
+  }
+  .add-extras .meta-field { gap: 4px; }
+
+  /* Validity Indicator */
+  .validity-indicator {
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .validity-indicator.valid {
+    background: var(--accent-soft);
+    border: 1px solid #c6e3cd;
+    color: var(--accent);
+  }
+  .validity-indicator.invalid {
+    background: #fdeeec;
+    border: 1px solid #f3c8c2;
+    color: var(--warn);
+  }
+  .validity-indicator .validity-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .validity-indicator .validity-reasons {
+    list-style: none;
+    padding-left: 18px;
+    margin: 4px 0 0;
+    font-size: 11px;
+    font-weight: 500;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s;
+  }
+  .validity-indicator.expanded .validity-reasons {
+    max-height: 100px;
+    padding-top: 4px;
+  }
+  .validity-indicator .validity-reasons li {
+    position: relative;
+    padding: 2px 0;
+  }
+  .validity-indicator .validity-reasons li::before {
+    content: '•';
+    position: absolute;
+    left: -10px;
+  }
 
   /* Tag picker (in edit dialog) */
   .tag-picker {
@@ -966,14 +1106,22 @@
 
   /* Very narrow phones (iPhone SE, older Androids) */
   @media (max-width: 380px) {
-    body { padding: calc(10px + var(--safe-top)) 10px calc(86px + var(--safe-bottom)); }
+    body { padding: calc(10px + var(--safe-top)) 10px calc(96px + var(--safe-bottom)); }
     h1 { font-size: 17px; }
     .panel { padding: 12px; }
-    .spot-circle { width: 48px; height: 48px; border-width: 1.5px; }
+    .spot-circle { width: 44px; height: 44px; border-width: 1.5px; padding: 1px; }
     .spot-pos { font-size: 7px; }
-    .spot-name { font-size: 9px; }
+    .spot-name { font-size: 8px; }
     .spot-empty { font-size: 7px; }
     .tab-label { font-size: 9px; }
+  }
+
+  /* Phones (380-540px) — main target */
+  @media (min-width: 381px) and (max-width: 540px) {
+    .spot-circle { width: 50px; height: 50px; }
+    .spot-pos { font-size: 8px; }
+    .spot-name { font-size: 9px; }
+    .spot-empty { font-size: 7px; }
   }
 </style>
 </head>
@@ -1023,6 +1171,10 @@
       </select>
     </div>
     <div class="meta-field">
+      <span class="meta-label">League Format</span>
+      <select id="leagueFormat" class="meta-input"></select>
+    </div>
+    <div class="meta-field">
       <span class="meta-label">League / Tourney Name</span>
       <input type="text" id="leagueName" class="meta-input" placeholder="e.g. Mon Night League" maxlength="40">
     </div>
@@ -1063,10 +1215,24 @@
         </div>
       </div>
 
+      <div class="add-extras">
+        <div class="meta-field">
+          <span class="meta-label">Gender</span>
+          <div class="gender-chips" id="playerGenderChips">
+            <div class="gender-chip on" data-gender="—">—</div>
+            <div class="gender-chip" data-gender="M">M</div>
+            <div class="gender-chip" data-gender="F">F</div>
+          </div>
+        </div>
+        <div class="meta-field">
+          <span class="meta-label">Skill</span>
+          <select id="playerSkill" class="meta-input"></select>
+        </div>
+      </div>
+
       <div class="panel-title" style="margin-top:4px">
         <h2>Roster</h2>
         <div class="actions">
-          <button class="btn ghost" id="autoFillBtn">Auto-Fill</button>
           <button class="btn primary" id="saveAndNewBtn" title="Save current to History, then start fresh">💾 Save &amp; New</button>
           <button class="btn danger" id="clearBtn">Clear</button>
         </div>
@@ -1099,6 +1265,7 @@
             <button class="btn" id="smartFillBtn" title="Build lineup from player attributes">✨ Smart Fill</button>
           </div>
         </div>
+        <div class="validity-indicator" id="validityIndicator" style="display:none"></div>
         <div class="smart-explain" id="smartExplain" style="display:none"></div>
         <ul class="lineup-list" id="lineupList"></ul>
         <div class="empty-state" id="lineupEmpty">
@@ -1233,6 +1400,18 @@
   </div>
 </div>
 
+<!-- Custom Confirm dialog (used instead of native confirm() because some browsers/iframes block it) -->
+<div class="dialog-backdrop" id="confirmDialog" style="display:none">
+  <div class="dialog" style="max-width:340px">
+    <h3 id="confirmDialogTitle" style="margin-bottom:8px">Confirm</h3>
+    <div id="confirmDialogMsg" style="font-size:14px; color:var(--text-dim); line-height:1.5; margin-bottom:14px"></div>
+    <div class="dialog-actions">
+      <button class="btn" id="confirmCancel">Cancel</button>
+      <button class="btn primary" id="confirmOk">OK</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Player dialog -->
 <div class="dialog-backdrop" id="editDialog" style="display:none">
   <div class="dialog">
@@ -1240,6 +1419,20 @@
     <div class="dialog-field">
       <span class="meta-label">Name</span>
       <input type="text" id="editName" class="meta-input" maxlength="20">
+    </div>
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:8px; margin-bottom:12px">
+      <div class="dialog-field" style="margin-bottom:0">
+        <span class="meta-label">Gender</span>
+        <div class="gender-chips" id="editGenderChips">
+          <div class="gender-chip on" data-gender="—">—</div>
+          <div class="gender-chip" data-gender="M">M</div>
+          <div class="gender-chip" data-gender="F">F</div>
+        </div>
+      </div>
+      <div class="dialog-field" style="margin-bottom:0">
+        <span class="meta-label">Skill</span>
+        <select id="editSkill" class="meta-input"></select>
+      </div>
     </div>
     <div class="pos-selects" style="margin-bottom: 10px">
       <div class="pos-select-wrap">
@@ -1258,6 +1451,10 @@
     <div class="dialog-field">
       <span class="meta-label">Attributes</span>
       <div class="tag-picker" id="editTags"></div>
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">Primary Strength <small style="font-weight:400; text-transform:none; letter-spacing:0">(drives Smart Fill placement)</small></span>
+      <select id="editPrimary" class="meta-input"></select>
     </div>
     <div class="dialog-actions">
       <button class="btn danger" id="editDelete">Delete</button>
