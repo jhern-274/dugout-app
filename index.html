@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Dugout — Slowpitch Lineup</title>
+
+<!-- PWA metadata -->
+<meta name="theme-color" content="#1f7a3e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Dugout">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f8f5;
+    --bg-card: #ffffff;
+    --border: #e4e8e2;
+    --border-mid: #cfd5cc;
+    --text: #1a2a1e;
+    --text-dim: #5b6b5e;
+    --text-faint: #8a968d;
+    --accent: #1f7a3e;
+    --accent-2: #2ea558;
+    --accent-soft: #e8f3eb;
+    --warn: #c0392b;
+    --grass: #3ea85a;
+    --grass-light: #52bd6f;
+    --grass-dark: #2a7a3f;
+    --dirt: #c99a68;
+    --dirt-dark: #a57a4b;
+    --shadow: 0 1px 2px rgba(20, 40, 25, 0.04), 0 4px 12px rgba(20, 40, 25, 0.06);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    padding: calc(12px + var(--safe-top)) 12px calc(90px + var(--safe-bottom));
+  }
+
+  .container { max-width: 1400px; margin: 0 auto; width: 100%; }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+  .brand > div { min-width: 0; }
+
+  .brand-logo {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px;
+    box-shadow: 0 2px 6px rgba(31, 122, 62, 0.25);
+    flex-shrink: 0;
+  }
+
+  h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+  .subtitle {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .roster-stat {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 11px;
+    background: var(--accent-soft);
+    border: 1px solid #c6e3cd;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .roster-stat .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-2); }
+
+  /* GAME META BAR */
+  .game-meta {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .meta-field { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .meta-field.full { grid-column: 1 / -1; }
+
+  .meta-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  .meta-input {
+    padding: 9px 11px;
+    background: white;
+    border: 1px solid var(--border-mid);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s;
+    width: 100%;
+  }
+  .meta-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 122, 62, 0.12);
+  }
+  select.meta-input {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%235b6b5e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+
+  /* BOTTOM TAB BAR */
+  .tab-bar {
+    position: fixed;
+    left: 0; right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    padding: 6px 6px calc(6px + var(--safe-bottom));
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    z-index: 500;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 4px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.15s;
+    color: var(--text-faint);
+    font-family: inherit;
+  }
+  .tab-btn.active { color: var(--accent); }
+  .tab-btn:active { background: var(--bg-soft); }
+
+  .tab-icon {
+    width: 22px; height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tab-icon svg { width: 100%; height: 100%; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .tab-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .tab-badge {
+    position: absolute;
+    top: 2px;
+    right: 16%;
+    background: var(--accent);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 10px;
+    min-width: 15px;
+    text-align: center;
+  }
+
+  .tab-btn { position: relative; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Mode toggle */
+  .mode-row {
+    display: flex; gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .mode-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .toggle-group {
+    display: flex;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 8px 8px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .toggle-btn.active {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 1px 3px rgba(31, 122, 62, 0.3);
+  }
+
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* GAME PAGE: lineup + field side-by-side layout */
+  .game-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* On wider screens, put lineup beside the field */
+  @media (min-width: 620px) {
+    .game-grid {
+      grid-template-columns: minmax(220px, 280px) 1fr;
+      align-items: start;
+    }
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .panel-title h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .panel-title .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+
+  .btn {
+    padding: 8px 14px;
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border-mid);
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { background: var(--bg-soft); border-color: var(--text-faint); }
+  .btn:active { transform: scale(0.97); }
+
+  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+
+  .btn.danger { color: var(--warn); border-color: #e7c7c3; }
+  .btn.danger:hover { background: #fdf0ee; border-color: var(--warn); }
+
+  .btn.ghost { background: transparent; }
+
+  .btn.wide { width: 100%; justify-content: center; padding: 12px; font-size: 14px; }
+
+  .add-form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .name-input {
+    padding: 11px 14px;
+    background: white;
+    border: 1px solid var(--border-mid);
+    border-radius: 9px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+  }
+  .name-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 122, 62, 0.12);
+  }
+
+  .pos-selects {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .pos-select-wrap { position: relative; }
+
+  .pos-select-label {
+    position: absolute;
+    top: 6px;
+    left: 12px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .pos-select {
+    width: 100%;
+    padding: 20px 8px 7px;
+    background: white;
+    border: 1px solid var(--border-mid);
+    border-radius: 9px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%235b6b5e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    padding-right: 22px;
+  }
+  .pos-select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(31, 122, 62, 0.12);
+  }
+
+  .roster-list {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .roster-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    min-width: 0;
+  }
+  .roster-row .tags-line {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 4px;
+    min-width: 0;
+  }
+
+  .roster-row .name {
+    font-weight: 600; font-size: 14px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    min-width: 0;
+  }
+  .roster-row .positions { display: flex; gap: 4px; }
+
+  .pos-pill {
+    padding: 3px 7px;
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    background: white;
+    color: var(--text-dim);
+    border: 1px solid var(--border-mid);
+  }
+  .pos-pill.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .pos-pill.secondary { background: var(--accent-soft); color: var(--accent); border-color: #c6e3cd; }
+  .pos-pill.tertiary { background: white; color: var(--accent); border-color: #c6e3cd; border-style: dashed; }
+
+  .roster-row.tappable {
+    cursor: pointer;
+  }
+  .roster-row.tappable:active {
+    background: white;
+  }
+  .roster-row .edit-hint {
+    font-size: 13px;
+    color: var(--text-faint);
+    padding: 0 4px;
+  }
+
+  /* Duplicate dialog checkbox rows */
+  .dup-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dup-row.checked {
+    background: var(--accent-soft);
+    border-color: #c6e3cd;
+  }
+  .dup-row:hover { border-color: var(--border-mid); }
+  .dup-row input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .dup-row .name {
+    font-weight: 600;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+  .dup-row .positions { display: flex; gap: 4px; }
+
+  /* Tag picker (in edit dialog) */
+  .tag-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+  }
+  .tag-chip {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: white;
+    border: 1px solid var(--border-mid);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .tag-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tag-chip.on {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* Mini tags shown on roster row */
+  .tag-mini {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid #c6e3cd;
+    margin-right: 3px;
+    white-space: nowrap;
+  }
+
+  /* Smart Fill explanation banner */
+  .smart-explain {
+    background: var(--accent-soft);
+    border: 1px solid #c6e3cd;
+    border-radius: 9px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--accent);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.4;
+  }
+  .smart-explain .icon { font-size: 14px; flex-shrink: 0; }
+  .smart-explain .text { flex: 1; }
+  .smart-explain .text strong { display: block; margin-bottom: 2px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .smart-explain .close {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    line-height: 1;
+  }
+
+  .icon-btn {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: white;
+    border: 1px solid var(--border-mid);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 16px; line-height: 1;
+  }
+  .icon-btn:hover { background: var(--warn); color: white; border-color: var(--warn); }
+
+  .lineup-list {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+
+  .lineup-item {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: grab;
+    transition: all 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
+    min-width: 0;
+  }
+  .lineup-item:hover { background: white; border-color: var(--border-mid); box-shadow: var(--shadow); }
+  .lineup-item.dragging { opacity: 0.4; cursor: grabbing; }
+  .lineup-item.drag-over { border-top: 2px solid var(--accent); padding-top: 8px; }
+
+  .order-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-weight: 800;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .lineup-item .player-name {
+    font-weight: 600; font-size: 14px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .pos-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 8px;
+    background: white;
+    color: var(--accent);
+    border-radius: 5px;
+    border: 1px solid var(--border-mid);
+  }
+  .pos-badge.eh { color: var(--text-faint); background: var(--bg-soft); }
+
+  .empty-state {
+    padding: 30px 16px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .empty-state .emoji { font-size: 28px; display: block; margin-bottom: 8px; opacity: 0.5; }
+
+  .field-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+  }
+
+  .field-label {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    z-index: 2;
+    color: #0a1a10;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.35);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    pointer-events: none;
+    max-width: 55%;
+    letter-spacing: 0.02em;
+  }
+  .field-label .park {
+    font-size: 13px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .field-label .date {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.85;
+    display: block;
+    margin-top: 1px;
+  }
+  .field-label:empty { display: none; }
+
+  .field-opponent {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    z-index: 2;
+    color: #0a1a10;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.35);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    pointer-events: none;
+    max-width: 40%;
+    letter-spacing: 0.02em;
+    text-align: right;
+  }
+  .field-opponent .vs-label {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.75;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .field-opponent .opp-name {
+    font-size: 13px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .field-opponent:empty { display: none; }
+
+  svg.field { width: 100%; height: 100%; display: block; }
+
+  .position-spot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: transform 0.15s;
+    touch-action: none;
+  }
+  .position-spot:hover { transform: translate(-50%, -50%) scale(1.06); }
+
+  .position-spot.drag-over .spot-circle {
+    background: var(--accent) !important;
+    border-color: white !important;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 4px rgba(31, 122, 62, 0.25);
+  }
+  .position-spot.drag-over .spot-pos,
+  .position-spot.drag-over .spot-empty { color: rgba(255,255,255,0.8) !important; }
+
+  .spot-circle {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    text-align: center;
+    transition: all 0.15s;
+    box-shadow: 0 2px 6px rgba(20, 40, 25, 0.22);
+  }
+  .spot-circle.filled {
+    background: var(--accent);
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(31, 122, 62, 0.4);
+  }
+  .spot-circle.filled .spot-pos { color: rgba(255,255,255,0.75); }
+  .spot-circle.filled .spot-name { color: white; }
+
+  .spot-pos {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 1px;
+  }
+
+  .spot-name {
+    font-weight: 700; font-size: 10px;
+    line-height: 1.05;
+    color: var(--text);
+    word-break: break-word;
+    max-width: 100%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    cursor: grab;
+    padding: 0 1px;
+  }
+
+  .spot-empty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: var(--text-faint);
+    margin-top: 1px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .bench {
+    margin-top: 14px;
+    padding: 12px;
+    background: var(--bg-soft);
+    border: 1px dashed var(--border-mid);
+    border-radius: 10px;
+    transition: all 0.15s;
+  }
+  .bench.drag-over {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    border-style: solid;
+  }
+
+  .bench-title {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    font-weight: 700;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .bench-list {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    min-height: 32px;
+  }
+
+  .bench-chip {
+    padding: 7px 12px;
+    background: white;
+    border: 1px solid var(--border-mid);
+    border-radius: 7px;
+    font-size: 13px; font-weight: 600;
+    cursor: grab;
+    transition: all 0.15s;
+    touch-action: none;
+  }
+  .bench-chip:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .bench-chip.eh-chip {
+    border-style: dashed;
+    color: var(--text-dim);
+  }
+  .bench-empty {
+    font-size: 12px;
+    color: var(--text-faint);
+    padding: 6px 0;
+    font-style: italic;
+  }
+
+  .helper {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .drag-clone {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  /* HISTORY */
+  .history-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .history-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
+    min-width: 0;
+  }
+  .history-card:hover { border-color: var(--accent); }
+  .history-info { min-width: 0; overflow: hidden; }
+  .history-info .team,
+  .history-info .meta {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .history-info .team {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .history-info .meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .history-info .meta-sep { color: var(--text-faint); margin: 0 6px; }
+  .history-info .player-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+
+  /* SAVE DIALOG */
+  .dialog-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(20, 40, 25, 0.4);
+    backdrop-filter: blur(3px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .dialog {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(20, 40, 25, 0.2);
+  }
+  .dialog h3 { font-size: 17px; margin-bottom: 14px; font-weight: 700; }
+  .dialog .dialog-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .dialog .dialog-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+  /* Install prompt */
+  .install-banner {
+    background: var(--accent-soft);
+    border: 1px solid #c6e3cd;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .install-banner .install-text { flex: 1; min-width: 140px; }
+  .install-banner .install-text strong { display: block; margin-bottom: 2px; }
+  .install-banner .install-text small { color: var(--text-dim); font-size: 11px; }
+
+  /* Medium phone / tablet: 2-column meta */
+  @media (min-width: 460px) {
+    .game-meta {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Desktop: 3-column meta */
+  @media (min-width: 768px) {
+    .game-meta {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .meta-field.full { grid-column: auto; }
+  }
+
+  /* Very narrow phones (iPhone SE, older Androids) */
+  @media (max-width: 380px) {
+    body { padding: calc(10px + var(--safe-top)) 10px calc(86px + var(--safe-bottom)); }
+    h1 { font-size: 17px; }
+    .panel { padding: 12px; }
+    .spot-circle { width: 48px; height: 48px; border-width: 1.5px; }
+    .spot-pos { font-size: 7px; }
+    .spot-name { font-size: 9px; }
+    .spot-empty { font-size: 7px; }
+    .tab-label { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="brand-logo">⚾</div>
+      <div>
+        <h1>Dugout</h1>
+        <div class="subtitle">Slowpitch Lineup Card</div>
+      </div>
+    </div>
+    <div class="roster-stat">
+      <span class="dot"></span>
+      <span id="rosterCount">0/15</span>
+    </div>
+  </header>
+
+  <!-- Install prompt (shown when installable) -->
+  <div class="install-banner" id="installBanner" style="display:none">
+    <span style="font-size:20px">📲</span>
+    <div class="install-text">
+      <strong>Install Dugout on your phone</strong>
+      <small>One-tap access, works offline</small>
+    </div>
+    <button class="btn primary" id="installBtn">Install</button>
+    <button class="icon-btn" id="installDismiss" title="Dismiss">×</button>
+  </div>
+
+  <!-- GAME META -->
+  <div class="game-meta">
+    <div class="meta-field">
+      <span class="meta-label">Team Name</span>
+      <input type="text" id="teamName" class="meta-input" placeholder="Your Team" maxlength="30">
+    </div>
+    <div class="meta-field">
+      <span class="meta-label">Opponent</span>
+      <input type="text" id="opponentName" class="meta-input" placeholder="Opponent" maxlength="30">
+    </div>
+    <div class="meta-field">
+      <span class="meta-label">Type</span>
+      <select id="gameType" class="meta-input">
+        <option value="League">League</option>
+        <option value="Tourney">Tourney</option>
+      </select>
+    </div>
+    <div class="meta-field">
+      <span class="meta-label">League / Tourney Name</span>
+      <input type="text" id="leagueName" class="meta-input" placeholder="e.g. Mon Night League" maxlength="40">
+    </div>
+    <div class="meta-field">
+      <span class="meta-label">Park / Field</span>
+      <input type="text" id="parkName" class="meta-input" placeholder="e.g. Oakwood Park" maxlength="40">
+    </div>
+    <div class="meta-field">
+      <span class="meta-label">Date</span>
+      <input type="date" id="gameDate" class="meta-input">
+    </div>
+  </div>
+
+  <!-- ROSTER PAGE -->
+  <div class="page active" id="page-roster">
+    <div class="panel">
+      <div class="panel-title">
+        <h2>Add Players</h2>
+      </div>
+
+      <div class="add-form">
+        <input type="text" id="playerName" class="name-input" placeholder="Player name" maxlength="20" autocomplete="off">
+        <button class="btn primary" id="addBtn">+ Add</button>
+      </div>
+
+      <div class="pos-selects">
+        <div class="pos-select-wrap">
+          <label class="pos-select-label">Primary</label>
+          <select id="playerPos1" class="pos-select"></select>
+        </div>
+        <div class="pos-select-wrap">
+          <label class="pos-select-label">Secondary</label>
+          <select id="playerPos2" class="pos-select"></select>
+        </div>
+        <div class="pos-select-wrap">
+          <label class="pos-select-label">Third</label>
+          <select id="playerPos3" class="pos-select"></select>
+        </div>
+      </div>
+
+      <div class="panel-title" style="margin-top:4px">
+        <h2>Roster</h2>
+        <div class="actions">
+          <button class="btn ghost" id="autoFillBtn">Auto-Fill</button>
+          <button class="btn primary" id="saveAndNewBtn" title="Save current to History, then start fresh">💾 Save &amp; New</button>
+          <button class="btn danger" id="clearBtn">Clear</button>
+        </div>
+      </div>
+
+      <div class="roster-list" id="rosterList"></div>
+      <div class="empty-state" id="rosterEmpty">
+        <span class="emoji">👥</span>
+        Add players to get started.<br>
+        Up to 15 (10 on field + 5 bench).
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME PAGE (Lineup + Field combined) -->
+  <div class="page" id="page-game">
+    <div class="mode-row">
+      <span class="mode-label">10th:</span>
+      <div class="toggle-group" role="group">
+        <button class="toggle-btn" data-mode="4of">4th Outfielder</button>
+        <button class="toggle-btn active" data-mode="mm">Middleman</button>
+      </div>
+    </div>
+
+    <div class="game-grid">
+      <div class="panel lineup-panel">
+        <div class="panel-title">
+          <h2>Line-up</h2>
+          <div class="actions">
+            <button class="btn" id="smartFillBtn" title="Build lineup from player attributes">✨ Smart Fill</button>
+          </div>
+        </div>
+        <div class="smart-explain" id="smartExplain" style="display:none"></div>
+        <ul class="lineup-list" id="lineupList"></ul>
+        <div class="empty-state" id="lineupEmpty">
+          <span class="emoji">📋</span>
+          Add players on the Roster tab.<br>
+          Drag rows here to reorder.
+        </div>
+        <div class="helper">↕ Drag rows to reorder</div>
+      </div>
+
+      <div class="panel field-panel">
+        <div class="panel-title">
+          <h2>Defensive Alignment</h2>
+        </div>
+
+        <div class="field-wrapper" id="fieldWrapper">
+          <div class="field-label" id="fieldLabel"></div>
+          <div class="field-opponent" id="fieldOpponent"></div>
+          <svg class="field" viewBox="0 0 700 700" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="grassStripes" patternUnits="userSpaceOnUse" width="60" height="60" patternTransform="rotate(20)">
+                <rect width="60" height="60" fill="#3ea85a"/>
+                <rect width="30" height="60" fill="#52bd6f" opacity="0.45"/>
+              </pattern>
+              <radialGradient id="fieldGlow" cx="50%" cy="85%" r="70%">
+                <stop offset="0%" stop-color="#52bd6f" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#2a7a3f" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect x="0" y="0" width="700" height="700" fill="#f6f8f5"/>
+            <path d="M 350 640 L 30 200 A 400 400 0 0 1 670 200 Z" fill="url(#grassStripes)"/>
+            <path d="M 350 640 L 30 200 A 400 400 0 0 1 670 200 Z" fill="url(#fieldGlow)"/>
+            <path d="M 30 200 A 400 400 0 0 1 670 200" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.9"/>
+            <circle cx="350" cy="510" r="175" fill="#c99a68"/>
+            <polygon points="350,395 470,510 350,625 230,510" fill="#52bd6f"/>
+            <polygon points="350,395 470,510 350,625 230,510" fill="url(#grassStripes)" opacity="0.6"/>
+            <line x1="350" y1="625" x2="60" y2="230" stroke="#ffffff" stroke-width="2.5"/>
+            <line x1="350" y1="625" x2="640" y2="230" stroke="#ffffff" stroke-width="2.5"/>
+            <rect x="344" y="619" width="12" height="12" fill="#ffffff"/>
+            <rect x="464" y="504" width="12" height="12" fill="#ffffff" transform="rotate(45 470 510)"/>
+            <rect x="344" y="389" width="12" height="12" fill="#ffffff" transform="rotate(45 350 395)"/>
+            <rect x="224" y="504" width="12" height="12" fill="#ffffff" transform="rotate(45 230 510)"/>
+            <circle cx="350" cy="475" r="13" fill="#c99a68" stroke="#a57a4b" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <div class="bench" id="bench">
+          <div class="bench-title">🪵 Bench / Unassigned</div>
+          <div class="bench-list" id="benchList"></div>
+        </div>
+
+        <div class="helper">⤺ Drag names between positions or bench</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <button class="btn primary wide" id="saveGameBtn">💾 Save This Game</button>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="page-history">
+    <div class="panel">
+      <div class="panel-title">
+        <h2>Saved Games</h2>
+        <div class="actions">
+          <button class="btn" id="loadTestBtn">Load Test Lineup</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList"></div>
+      <div class="empty-state" id="historyEmpty">
+        <span class="emoji">📚</span>
+        No saved games yet.<br>
+        Tap <strong>Save This Game</strong> on the Lineup & Field tab.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Tab Bar -->
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="roster">
+    <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+    <span class="tab-label">Roster</span>
+  </button>
+  <button class="tab-btn" data-tab="game">
+    <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M2 18 L12 4 L22 18 Z"/><line x1="7" y1="18" x2="17" y2="18"/></svg></span>
+    <span class="tab-label">Lineup & Field</span>
+  </button>
+  <button class="tab-btn" data-tab="history">
+    <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg></span>
+    <span class="tab-label">History</span>
+    <span class="tab-badge" id="historyBadge" style="display:none"></span>
+  </button>
+</nav>
+
+<!-- Save dialog -->
+<div class="dialog-backdrop" id="saveDialog" style="display:none">
+  <div class="dialog">
+    <h3>Save This Game</h3>
+    <div class="dialog-field">
+      <span class="meta-label">Team Name</span>
+      <input type="text" id="dlgTeam" class="meta-input" maxlength="30">
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">Opponent</span>
+      <input type="text" id="dlgOpponent" class="meta-input" maxlength="30">
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">Type</span>
+      <select id="dlgType" class="meta-input">
+        <option value="League">League</option>
+        <option value="Tourney">Tourney</option>
+      </select>
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">League / Tourney Name</span>
+      <input type="text" id="dlgLeague" class="meta-input" maxlength="40">
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">Park / Field</span>
+      <input type="text" id="dlgPark" class="meta-input" maxlength="40">
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">Date</span>
+      <input type="date" id="dlgDate" class="meta-input">
+    </div>
+    <div class="dialog-actions">
+      <button class="btn" id="dlgCancel">Cancel</button>
+      <button class="btn primary" id="dlgConfirm">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Player dialog -->
+<div class="dialog-backdrop" id="editDialog" style="display:none">
+  <div class="dialog">
+    <h3 id="editDialogTitle">Edit Player</h3>
+    <div class="dialog-field">
+      <span class="meta-label">Name</span>
+      <input type="text" id="editName" class="meta-input" maxlength="20">
+    </div>
+    <div class="pos-selects" style="margin-bottom: 10px">
+      <div class="pos-select-wrap">
+        <label class="pos-select-label">Primary</label>
+        <select id="editPos1" class="pos-select"></select>
+      </div>
+      <div class="pos-select-wrap">
+        <label class="pos-select-label">Secondary</label>
+        <select id="editPos2" class="pos-select"></select>
+      </div>
+      <div class="pos-select-wrap">
+        <label class="pos-select-label">Third</label>
+        <select id="editPos3" class="pos-select"></select>
+      </div>
+    </div>
+    <div class="dialog-field">
+      <span class="meta-label">Attributes</span>
+      <div class="tag-picker" id="editTags"></div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn danger" id="editDelete">Delete</button>
+      <div style="flex:1"></div>
+      <button class="btn" id="editCancel">Cancel</button>
+      <button class="btn primary" id="editConfirm">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Duplicate Roster dialog -->
+<div class="dialog-backdrop" id="duplicateDialog" style="display:none">
+  <div class="dialog" style="max-width:440px">
+    <h3 id="duplicateDialogTitle">Duplicate Roster</h3>
+    <div style="font-size:12px; color:var(--text-dim); margin-bottom:10px; line-height:1.5">
+      Pick which players to carry over to a new roster. Check / uncheck to include or skip.
+    </div>
+    <div style="display:flex; gap:8px; margin-bottom:10px">
+      <button class="btn" id="dupSelectAll" style="flex:1; justify-content:center">Select All</button>
+      <button class="btn" id="dupSelectNone" style="flex:1; justify-content:center">Select None</button>
+    </div>
+    <div id="duplicateList" class="roster-list" style="max-height:340px; overflow-y:auto; margin-bottom:12px"></div>
+    <div class="dialog-actions">
+      <button class="btn" id="dupCancel">Cancel</button>
+      <button class="btn primary" id="dupConfirm">Create Roster</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+// PWA: register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+  });
+}
+
+// PWA: install prompt
+let deferredInstallPrompt = null;
+const installBanner = document.getElementById('installBanner');
+const installBtn = document.getElementById('installBtn');
+const installDismiss = document.getElementById('installDismiss');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if (!localStorage.getItem('dugout_install_dismissed')) {
+    installBanner.style.display = 'flex';
+  }
+});
+
+installBtn?.addEventListener('click', async () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  if (choice.outcome === 'accepted') {
+    installBanner.style.display = 'none';
+  }
+  deferredInstallPrompt = null;
+});
+
+installDismiss?.addEventListener('click', () => {
+  installBanner.style.display = 'none';
+  localStorage.setItem('dugout_install_dismissed', '1');
+});
+
+window.addEventListener('appinstalled', () => {
+  installBanner.style.display = 'none';
+});
+</script>
+</body>
+</html>
