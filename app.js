@@ -502,6 +502,28 @@ function renderLineup() {
     const isEH = !assignedPos;
     const genderHtml = (p.gender && p.gender !== '—')
       ? `<span class="gender-badge gb-inline ${p.gender === 'F' ? 'g-f' : 'g-m'}">${p.gender}</span>` : '';
+    const skillHtml = (p.skill && p.skill !== '—')
+      ? `<span class="skill-badge gb-inline">${escapeHtml(p.skill)}</span>` : '';
+
+    // Build ordered tag list: primary first (bolded), then remaining tags in their checkbox order.
+    // Primary may be a label that isn't in the tags array (the dropdown is the source of truth),
+    // in which case we still show it. If primary IS in tags, we don't duplicate.
+    const tagsArr = Array.isArray(p.tags) ? p.tags : [];
+    const ordered = [];
+    if (p.primary && p.primary !== '—') {
+      ordered.push({ id: p.primary, primary: true });
+    }
+    tagsArr.forEach(t => {
+      if (!ordered.find(x => x.id === t)) {
+        ordered.push({ id: t, primary: false });
+      }
+    });
+
+    const tagsHtml = ordered.length > 0
+      ? `<span class="lineup-tags">${ordered.map(t =>
+          `<span class="lineup-tag${t.primary ? ' primary' : ''}">${escapeHtml(tagLabel(t.id))}</span>`
+        ).join('')}</span>`
+      : '';
 
     const li = document.createElement('li');
     li.className = 'lineup-item';
@@ -509,7 +531,10 @@ function renderLineup() {
     li.dataset.pid = pid;
     li.innerHTML = `
       <span class="order-num">${idx + 1}</span>
-      <span class="player-name">${escapeHtml(p.name)}${genderHtml}</span>
+      <div class="lineup-info">
+        <span class="player-name">${escapeHtml(p.name)}${genderHtml}${skillHtml}</span>
+        ${tagsHtml}
+      </div>
       <span class="pos-badge ${isEH ? 'eh' : ''}">${displayPos}</span>
     `;
     list.appendChild(li);

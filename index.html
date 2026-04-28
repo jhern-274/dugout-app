@@ -767,6 +767,40 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
+  /* New: name + tags stacked in the middle of each lineup row */
+  .lineup-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .lineup-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: center;
+    line-height: 1.2;
+  }
+
+  .lineup-tag {
+    font-size: 9.5px;
+    font-weight: 500;
+    color: var(--text-dim);
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: white;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .lineup-tag.primary {
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: #c6e3cd;
+  }
+
   .pos-badge {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; font-weight: 700;
